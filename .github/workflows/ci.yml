@@ -1,0 +1,74 @@
+name: C++ CI
+
+on: 
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v4
+
+    - name: Compile main program
+      run: g++ -std=c++17 -o main hw1/main.cpp
+      
+    - name: Run main program with sample input
+      run: |
+        output=$(echo -e "2\n1" | ./main)
+        echo "$output"
+        if ! echo "$output" | grep -q "A(2, 1) = 5"; then
+          echo "Test failed: Unexpected output from main program"
+          exit 1
+        fi
+
+    - name: Prepare for unit tests
+      run: |
+        # Create a version of main.cpp without the main() function for testing
+        sed '/int main()/,$d' hw1/main.cpp > hw1/ackermann_functions.cpp
+
+        # Create the test runner C++ file
+        cat <<'EOF' > hw1/test.cpp
+        #include <iostream>
+        #include <cassert>
+        #include "ackermann_functions.cpp"
+
+        void run_tests() {
+            std::cout << "Running unit tests..." << std::endl;
+
+            // Test cases from report
+            assert(ackermann_recursive(0, 0) == 1 && ackermann_non_recursive(0, 0) == 1);
+            std::cout << "Test (0, 0) PASSED" << std::endl;
+            assert(ackermann_recursive(1, 2) == 4 && ackermann_non_recursive(1, 2) == 4);
+            std::cout << "Test (1, 2) PASSED" << std::endl;
+            assert(ackermann_recursive(2, 1) == 5 && ackermann_non_recursive(2, 1) == 5);
+            std::cout << "Test (2, 1) PASSED" << std::endl;
+            assert(ackermann_recursive(3, 0) == 5 && ackermann_non_recursive(3, 0) == 5);
+            std::cout << "Test (3, 0) PASSED" << std::endl;
+            assert(ackermann_recursive(3, 1) == 13 && ackermann_non_recursive(3, 1) == 13);
+            std::cout << "Test (3, 1) PASSED" << std::endl;
+
+            // Additional test cases
+            assert(ackermann_recursive(0, 5) == 6 && ackermann_non_recursive(0, 5) == 6);
+            std::cout << "Test (0, 5) PASSED" << std::endl;
+            assert(ackermann_recursive(2, 0) == 3 && ackermann_non_recursive(2, 0) == 3);
+            std::cout << "Test (2, 0) PASSED" << std::endl;
+
+            std::cout << "All unit tests passed successfully!" << std::endl;
+        }
+
+        int main() {
+            run_tests();
+            return 0;
+        }
+        EOF
+
+    - name: Compile unit tests
+      run: g++ -std=c++17 -o test_runner hw1/test.cpp
+
+    - name: Run unit tests
+      run: ./test_runner
