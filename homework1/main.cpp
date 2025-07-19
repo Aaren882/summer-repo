@@ -56,7 +56,10 @@ int main()
   try
   {
 
-    SetConsoleOutputCP(65001); // For Chinese characters in console
+    if (!IsValidCodePage(CP_UTF8))
+    {
+      SetConsoleOutputCP(CP_UTF8); // For Chinese characters in console
+    }
 
     int m, n;
     printf("- 輸入 m 和 n，兩者皆為[非負數整數]。\n");
