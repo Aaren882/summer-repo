@@ -57,7 +57,7 @@ int main() {
 
   printf("The powerset of ");
   print_vector(s);
-  printf(" is:\n");
+  printf(" is:\n\n");
 
   std::vector<std::vector<char>> result = powerset(s);
 
