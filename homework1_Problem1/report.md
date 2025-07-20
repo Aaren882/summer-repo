@@ -1,6 +1,6 @@
 # 41141141
 
-作業一
+作業一 Problem 1
 
 ## 解題說明
 
@@ -13,7 +13,7 @@ A(m-1, 1) & \text{if } m > 0 \text{ and } n = 0 \\
 A(m-1, A(m, n-1)) & \text{if } m > 0 \text{ and } n > 0
 \end{cases}
 $$
-此函式以其對於小的輸入值卻有極大的增長率而聞名。要求分別使用遞迴（Recursive）與非遞迴（Non-recursive）兩種方式來實現。
+此函式以其對於小的輸入值卻有極大的增長率。要求分別使用遞迴（Recursive）與非遞迴（Non-recursive）兩種方式來實現。
 
 ### 解題策略
 
@@ -89,8 +89,8 @@ int ackermann_non_recursive(int m, int n) {
 ### 編譯與執行指令
 
 ```shell
-$ g++ -std=c++17 -o hw1 ./hw1/main.cpp
-$ ./hw1
+$ g++ -std=c++17 -o hw1P1 ./homework1_Problem1/src/main.cpp
+$ ./hw1P1
 - 輸入 m 和 n，兩者皆為[非負數整數]。
 - 警告❌: 這個Function的成長速度非常快，請小心使用。
 - (e.g., m < 4)
