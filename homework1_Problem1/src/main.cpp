@@ -1,5 +1,7 @@
 #include <iostream>
-#include <windows.h> // #NOTE - For Chinese characters in console
+#ifdef _WIN32
+  #include <windows.h> // #NOTE - For Chinese characters in console
+#endif
 #include <stack>
 
 // Recursive implementation of Ackermann's function
@@ -56,10 +58,9 @@ int main()
   try
   {
 
-    if (!IsValidCodePage(CP_UTF8))
-    {
+    #ifdef _WIN32
       SetConsoleOutputCP(CP_UTF8); // For Chinese characters in console
-    }
+    #endif
 
     int m, n;
     printf("- 輸入 m 和 n，兩者皆為[非負數整數]。\n");
@@ -90,21 +91,26 @@ int main()
     printf("\n使用非遞迴計算...\n");
     int result_non_recursive = ackermann_non_recursive(m, n);
     printf("A(%1d,%2d) = %3d\n", m, n, result_non_recursive);
+
+    system("pause");
     return 0;
   }
   catch (const std::runtime_error &e)
   {
     std::cerr << "Runtime error: " << e.what() << std::endl;
+    system("pause");
     return 1;
   }
   catch (const std::exception &e)
   {
     std::cerr << "An unexpected error occurred: " << e.what() << std::endl;
+    system("pause");
     return 1;
   }
   catch (...)
   {
     std::cerr << "An unknown error occurred." << std::endl;
+    system("pause");
     return 1;
   }
 }
