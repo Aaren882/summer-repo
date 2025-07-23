@@ -39,8 +39,6 @@
 void powerSet(const string &S, int index, string current)
 {
   // 基本情況：當索引到達輸入字串 S 的末尾時
-  // 這意味著我們已經為每個字元做出了包含或排除的決定
-  // `current` 字串現在擁有一個完整的子集
   if (index == S.length())
   {
     // 印出結果子集
@@ -53,15 +51,14 @@ void powerSet(const string &S, int index, string current)
     return;
   }
 
-  // --- 遞迴步驟 ---
+  // --- 遞迴 ---
 
   // 情況 1：不包含字元 S[index]
-  // 我們為下一個索引呼叫函式，並傳遞未經修改的 `current` 字串
+  // 我們為下一個索引呼叫函式，並傳入未修改的 `current` 字串
   powerSet(S, index + 1, current);
 
   // 情況 2：包含字元 S[index]
   // 我們為下一個索引呼叫函式，並傳遞一個新的 `current` 字串，
-  // 其中包含字元 S[index]
   powerSet(S, index + 1, current + S[index]);
 }
 ```
