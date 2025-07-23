@@ -5,15 +5,16 @@
 ## 解題說明
 
 本題要求實作阿克曼函式 (Ackermann's function) $A(m, n)$，其定義如下：
-$$
+$
 A(m, n) = 
 \begin{cases} 
 n+1 & \text{if } m = 0 \\
 A(m-1, 1) & \text{if } m > 0 \text{ and } n = 0 \\
 A(m-1, A(m, n-1)) & \text{if } m > 0 \text{ and } n > 0
 \end{cases}
-$$
-此函式以其對於小的輸入值卻有極大的增長率。要求分別使用遞迴（Recursive）與非遞迴（Non-recursive）兩種方式來實現。
+$
+此函式以其對於小的輸入值卻有極大的增長率。
+要求使用遞迴（Recursive）與非遞迴（Non-recursive）兩種方式來實現。
 
 ### 解題策略
 
@@ -21,58 +22,102 @@ $$
     直接根據數學定義將 $A(m, n)$ 轉換為 C++ 函式。此方法程式碼簡潔，與原始定義高度對應。
 
 2.  **非遞迴版本**：
-    為避免遞迴深度過深導致堆疊溢位（Stack Overflow），使用 `std::stack` 來模擬遞迴呼叫的過程。透過手動管理堆疊，將計算狀態（$m$ 的值）存入堆疊中，並在迴圈中處理，直到計算完成。
+    為避免遞迴深度過深導致堆疊溢位（Stack Overflow），使用一個手動管理的動態陣列來模擬堆疊行為。透過手動管理此堆疊，將計算狀態（$m$ 的值）存入其中，並在迴圈中處理，直到計算完成。此方法還包含動態擴展堆疊容量的機制，以應對計算過程中可能出現的堆疊需求增長。
 
 ## 程式實作
 
-以下為主要程式碼：
+以下為 `main.cpp` 的完整程式碼：
 
 ```cpp
-#include <iostream>
-#include <stack>
+// 遞迴
+int ackermann_recursive(int m, int n)
+{
 
-// Recursive implementation of Ackermann's function
-int ackermann_recursive(int m, int n) {
-    if (m == 0) {
-        return n + 1;
-    } else if (m > 0 && n == 0) {
-        return ackermann_recursive(m - 1, 1);
-    } else if (m > 0 && n > 0) {
-        return ackermann_recursive(m - 1, ackermann_recursive(m, n - 1));
-    }
-    return -1; // Should not happen for non-negative m, n
+  if (m == 0)
+  {
+    return n + 1;
+  }
+  else if (m > 0 && n == 0)
+  {
+    return ackermann_recursive(m - 1, 1);
+  }
+  else if (m > 0 && n > 0)
+  {
+    return ackermann_recursive(m - 1, ackermann_recursive(m, n - 1));
+  }
+  return -1; //- 如果無效輸入
 }
 
-// Non-recursive implementation of Ackermann's function
-int ackermann_non_recursive(int m, int n) {
-    std::stack<int> s;
-    s.push(m);
+// 非遞迴
+int ackermann_non_recursive(int m, int n)
+{
+  int stack_capacity = 1000;
+  int *stack = new int[stack_capacity]; //- 因為內建的Array不是STL東西 所以拿來用了
+  int stack_top = -1;
 
-    while (!s.empty()) {
-        m = s.top();
-        s.pop();
+  // 從初始的 'm' 值開始。
+  stack[++stack_top] = m;
 
-        if (m == 0) {
-            n = n + 1;
-        } else if (n == 0) {
-            s.push(m - 1);
-            n = 1;
-        } else {
-            s.push(m - 1);
-            s.push(m);
-            n = n - 1;
-        }
+  while (stack_top != -1)
+  {
+    //- 當 stack 不是空的
+    int current_m = stack[stack_top];
+    stack_top--; // 彈出
+
+    if (current_m == 0)
+    {
+      n = n + 1;
     }
-    return n;
+    else if (n == 0)
+    {
+      //- 函數 => A(m-1, 1)
+      stack_top++;
+      stack[stack_top] = current_m - 1;
+      n = 1;
+    }
+    else
+    {
+      //- 函數 => A(m-1, A(m, n-1))
+      // 檢查堆疊是否溢位
+      if (stack_top + 2 >= stack_capacity)
+      {
+        int new_capacity = stack_capacity * 2;
+        int *new_stack = new int[new_capacity];
+
+        //- 複製舊的值
+        for (int i = 0; i <= stack_top; ++i)
+        {
+          new_stack[i] = stack[i];
+        }
+        delete[] stack; // 釋放舊記憶體
+        stack = new_stack;
+        stack_capacity = new_capacity;
+      }
+
+      // 推入 m-1
+      stack_top++;
+      stack[stack_top] = current_m - 1;
+
+      // 推入 m (用於內部的 A(m, n-1))
+      stack_top++;
+      stack[stack_top] = current_m;
+
+      // 為內部呼叫設定 n
+      n = n - 1;
+    }
+  }
+
+  delete[] stack; // 釋放分配的記憶體
+  return n;
 }
 ```
 
 ## 效能分析
 
-1.  **時間複雜度**：阿克曼函式的時間複雜度增長速度極快，無法用標準的多項式或指數時間 $O(n^k)$ 或 $O(k^n)$ 來有效描述。其複雜度通常使用超運算（Hyperoperation）或高德納箭號表示法來定義，遠超傳統演算法。
+1.  **時間複雜度**：阿克曼函式的時間複雜度增長速度極快，無法用標準的多項式或指數時間 $O(n^k)$ 或 $O(k^n)$ 來有效描述。
 2.  **空間複雜度**：
     *   **遞迴版本**：空間複雜度與最大遞迴深度成正比，約為 $O(m + A(m, n))$，對於稍大的 $m$ 和 $n$ 就會輕易導致堆疊溢位。
-    *   **非遞迴版本**：空間複雜度取決於堆疊的最大尺寸，與遞迴版本的最大深度類似，但由於使用堆（Heap）空間，較不容易發生溢位。
+    *   **非遞迴版本**：空間複雜度取決於堆疊的最大尺寸，與遞迴版本的最大深度類似，但由於使用堆（Heap）空間並可動態擴展，較不容易發生溢位。
 
 ## 測試與驗證
 
@@ -89,19 +134,17 @@ int ackermann_non_recursive(int m, int n) {
 ### 編譯與執行指令
 
 ```shell
-$ g++ -std=c++17 -o hw1P1 ./homework1_Problem1/src/main.cpp
+$ g++ -std=c++11 -o hw1P1 ./homework1_Problem1/src/main.cpp
 $ ./hw1P1
-- 輸入 m 和 n，兩者皆為[非負數整數]。
-- 警告❌: 這個Function的成長速度非常快，請小心使用。
-- (e.g., m < 4)
-輸入 m : 3
-輸入 n: 2
+m : 3
+n: 2
 
-使用遞迴計算...
+Use Recursive Function...
 A(3, 2) =  29
 
-使用非遞迴計算...
+Use Non-recursive Function...
 A(3, 2) =  29
+Press Enter to exit...
 ```
 
 ### 結論
@@ -113,19 +156,16 @@ A(3, 2) =  29
 ## 申論及開發報告
 
 ### 遞迴與非遞迴的比較
-
-在本程式中，同時實作遞迴與非遞迴兩種版本的阿克曼函式，是為了展示兩種截然不同的程式設計思維：
-
 1.  **遞迴版本：直觀且易於理解**
     遞迴的寫法直接翻譯了阿克曼函式的數學定義，程式碼結構清晰，邏輯與原始問題高度一致。這使得程式碼非常容易閱讀和驗證其正確性。然而，其缺點也非常明顯：
     *   **堆疊溢位風險**：每次函式呼叫都會在呼叫堆疊 (Call Stack) 中產生一個新的堆疊幀 (Stack Frame)。當 $m$ 和 $n$ 稍大時，遞迴深度會急遽增加，快速耗盡堆疊空間，導致程式崩潰。
 
 2.  **非遞迴版本：效能與穩定性的考量**
-    非遞迴版本透過手動維護一個位於堆（Heap）上的 `std::stack` 來模擬遞迴行為。這種方式的優點是：
-    *   **避免堆疊溢位**：堆的空間遠大於堆疊，因此可以計算更大範圍的 $m$ 和 $n$ 值，程式穩定性更高。
+    非遞迴版本透過手動維護一個位於堆（Heap）上的動態陣列來模擬堆疊行為。這種方式的優點是：
+    *   **避免堆疊溢位**：堆的空間遠大於堆疊，因此可以計算更大範圍的 $m$ 和 $n$ 值，程式穩定性更高。此外，當堆疊空間不足時，程式會自動擴展容量，進一步增強其穩健性。
     *   **效能可能更佳**：雖然演算法的根本複雜度不變，但避免了函式呼叫的額外開銷 (overhead)，在某些情況下執行效率可能略高。
-    其缺點是程式碼的複雜度較高，不如遞迴版本直觀，需要更仔細地追蹤狀態（$m$ 和 $n$ 的變化）來理解其運作原理。
+    其缺點是程式碼的複雜度較高，不如遞迴版本直觀，需要更仔細地追蹤狀態（如堆疊頂端、m 和 n 的變化）來理解其運作原理，且需要手動管理記憶體。
 
-總結來說，遞迴版本是理論的優雅體現，而非遞迴版本則是工程實踐上的務實選擇。透過這個作業，我們不僅實作了一個有趣的數學函式，更深刻體會到在解決問題時，如何在程式碼的簡潔性與系統的穩健性之間做出權衡。
+總結來說，我認為遞迴的寫法勝在直觀性，但非遞迴才是在更可靠的作法。
 
 ```

@@ -1,10 +1,7 @@
 #include <iostream>
-#ifdef _WIN32
-  #include <windows.h> // #NOTE - For Chinese characters in console
-#endif
-#include <stack>
+using namespace std;
 
-// Recursive implementation of Ackermann's function
+// 遞迴
 int ackermann_recursive(int m, int n)
 {
 
@@ -20,97 +17,99 @@ int ackermann_recursive(int m, int n)
   {
     return ackermann_recursive(m - 1, ackermann_recursive(m, n - 1));
   }
-  return -1; // Should not happen for non-negative m, n
+  return -1; //- 如果無效輸入
 }
 
-// Non-recursive implementation of Ackermann's function
+// 非遞迴
 int ackermann_non_recursive(int m, int n)
 {
-  std::stack<int> s;
-  s.push(m);
+  int stack_capacity = 1000;
+  int *stack = new int[stack_capacity]; //- 因為內建的Array不是STL東西 所以拿來用了
+  int stack_top = -1;
 
-  while (!s.empty())
+  // 從初始的 'm' 值開始。
+  stack[++stack_top] = m;
+
+  while (stack_top != -1)
   {
-    m = s.top();
-    s.pop();
+    //- 當 stack 不是空的
+    int current_m = stack[stack_top];
+    stack_top--; // 彈出
 
-    if (m == 0)
+    if (current_m == 0)
     {
       n = n + 1;
     }
     else if (n == 0)
     {
-      s.push(m - 1);
+      //- 函數 => A(m-1, 1)
+      stack_top++;
+      stack[stack_top] = current_m - 1;
       n = 1;
     }
     else
     {
-      s.push(m - 1);
-      s.push(m);
+      //- 函數 => A(m-1, A(m, n-1))
+      // 檢查堆疊是否溢位
+      if (stack_top + 2 >= stack_capacity)
+      {
+        int new_capacity = stack_capacity * 2;
+        int *new_stack = new int[new_capacity];
+
+        //- 複製舊的值
+        for (int i = 0; i <= stack_top; ++i)
+        {
+          new_stack[i] = stack[i];
+        }
+        delete[] stack; // 釋放舊記憶體
+        stack = new_stack;
+        stack_capacity = new_capacity;
+      }
+
+      // 推入 m-1
+      stack_top++;
+      stack[stack_top] = current_m - 1;
+
+      // 推入 m (用於內部的 A(m, n-1))
+      stack_top++;
+      stack[stack_top] = current_m;
+
+      // 為內部呼叫設定 n
       n = n - 1;
     }
   }
+
+  delete[] stack; // 釋放分配的記憶體
   return n;
 }
 
 int main()
 {
-  try
+  int m, n;
+  printf("m : ");
+  cin >> m;
+  printf("n: ");
+  cin >> n;
+
+  //- 對於較大的值，遞迴版本可能會導致 stack overflow
+  if (m > 3)
   {
-
-    #ifdef _WIN32
-      SetConsoleOutputCP(CP_UTF8); // For Chinese characters in console
-    #endif
-
-    int m, n;
-    printf("- 輸入 m 和 n，兩者皆為[非負數整數]。\n");
-    printf("- 警告❌: 這個Function的成長速度非常快，請小心使用。\n");
-    printf("- (e.g., m < 4)\n");
-    printf("輸入 m : ");
-    std::cin >> m;
-    printf("輸入 n: ");
-    std::cin >> n;
-
-    if (m < 0 || n < 0)
-    {
-      throw std::runtime_error("m 或 n 為負數，請重新輸入。\n");
-    }
-
-    printf("\n使用遞迴計算...\n");
-    // For larger values, recursive version can cause stack overflow.
-    if (m > 3)
-    {
-      printf("看來 m > 3 遞迴可能會造成 stack overflow。\n");
-    }
-    else
-    {
-      int result_recursive = ackermann_recursive(m, n);
-      printf("A(%1d,%2d) = %3d\n", m, n, result_recursive);
-    }
-
-    printf("\n使用非遞迴計算...\n");
-    int result_non_recursive = ackermann_non_recursive(m, n);
-    printf("A(%1d,%2d) = %3d\n", m, n, result_non_recursive);
-
-    system("pause");
-    return 0;
+    printf("m > 3 may cause stack overflow.\n");
   }
-  catch (const std::runtime_error &e)
+  else
   {
-    std::cerr << "Runtime error: " << e.what() << std::endl;
-    system("pause");
-    return 1;
+    printf("\nUse Recursive Function...\n");
+    int result_recursive = ackermann_recursive(m, n);
+    printf("A(%1d,%2d) = %3d\n", m, n, result_recursive);
   }
-  catch (const std::exception &e)
-  {
-    std::cerr << "An unexpected error occurred: " << e.what() << std::endl;
-    system("pause");
-    return 1;
-  }
-  catch (...)
-  {
-    std::cerr << "An unknown error occurred." << std::endl;
-    system("pause");
-    return 1;
-  }
+
+  printf("\nUse Non-recursive Function...\n");
+  int result_non_recursive = ackermann_non_recursive(m, n);
+  printf("A(%1d,%2d) = %3d\n", m, n, result_non_recursive);
+
+  //- 暫停
+  printf("Press Enter to exit...");
+  cin.ignore().get();
+
+  return 0;
 }
