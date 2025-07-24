@@ -4,6 +4,8 @@ name: Validate Reports on Push
 on:
     push:
     pull_request:
+      branches:
+        - 'main'
 
 jobs:
     validate-reports:
