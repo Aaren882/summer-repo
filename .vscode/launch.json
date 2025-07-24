@@ -7,7 +7,6 @@
       "program": "${fileDirname}\\${fileBasenameNoExtension}.exe",
       "args": [],
       "stopAtEntry": false,
-      "cwd": "k:\\summer-repo\\hw1",
       "environment": [],
       "externalConsole": false,
       "MIMode": "gdb",
