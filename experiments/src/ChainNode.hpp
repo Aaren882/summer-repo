@@ -7,13 +7,13 @@ class ChainNode
   friend class Chain<T>;
 
   private:
-    ChainNode<T> *link;
+    ChainNode<T> *plink; //- Pointer of next node
 
   public:
     T data;
-    ChainNode(const T &data, ChainNode<T> *link = nullptr)
+    ChainNode(const T data, ChainNode<T> *plink = nullptr)
     {
       this->data = data;
-      this->link = link;
+      this->plink = plink;
     }
 };

@@ -1,53 +1,56 @@
 ﻿template <class T>
 class Chain
 {
-  private:
-    int capacity;
-    ChainNode<T> *first;
-    ChainNode<T> *last;
+private:
+  int capacity;
+  ChainNode<T> *pfirst;
+  ChainNode<T> *plast;
+
+public:
+  int size = 0;
+
+  Chain(int capacity)
+  {
+    this->capacity = capacity;
+  }
+  //- Add NewNode
+  int Add(const T input)
+  {
     
-  public:
-    int size = 0;
+    //- de-ref the "newNode"
+    ChainNode<T> *pNewNode = new ChainNode<T>(input);
 
-    Chain(int capacity)
+    //-#NOTE - Pointer is C++ nature, must get use to it
+
+    if (size == 0) //- #NOTE - Check empty
     {
-      this->capacity = capacity;
+      this->pfirst = pNewNode; //- the first Node
+      pfirst->plink = pNewNode; //- Push back
     }
-    //- Add NewNode
-    int Add(const T &input)
+    else
     {
-      //- de-ref the "newNode"
-      ChainNode<T>* newNode = new ChainNode<T>(input);
-
-      if (size == 0) //- #NOTE - Check empty
-      {
-        this->first = newNode;  //- the first Node
-        first->link = newNode; //- Pushback
-      }
-      else
-      {
-        last->link = newNode; //- Pushback
-      }
-
-      this->last = newNode;
-
-      size++; //- increase size
-      return size;
+      plast->plink = pNewNode; //- Push back
     }
-    //- Get
-    ChainNode<T> get(int index)
+
+    this->plast = pNewNode;
+
+    size++; //- increase size
+    return size;
+  }
+  //- Get
+  ChainNode<T> get(int index)
+  {
+    if (index >= size)
     {
-      if (index >= size)
-      {
-        throw "Out of Chain Range.";
-      }
-      
-      ChainNode<T>* result;
-      for (int i = 0; i <= index; i++)
-      {
-        result = first->link;
-      }
-
-      return *result;
+      throw "Out of Chain Range.";
     }
+
+    ChainNode<T> *result;
+    for (int i = 0; i <= index; i++)
+    {
+      result = pfirst->plink;
+    }
+
+    return *result; //- de-Ref
+  }
 };

@@ -7,7 +7,7 @@ using namespace std;
 template <class U>
 ostream &operator<<(ostream &os, const Chain<U> &chain)
 {
-  os << chain.size;
+  os << chain.size; //- Print the size of "Chain<>"
   return os;
 }
 
