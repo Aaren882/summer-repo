@@ -37,6 +37,33 @@ public:
     size++; //- increase size
     return size;
   }
+  int Delete(int index)
+  {
+    ChainNode<T>* first = this->pfirst;
+    
+    if (!first) throw "This Chain is empty.";
+    if (index > size - 1) throw "Index out of range.";
+
+    if (index == 0) {
+      this->pfirst = first->plink;
+      delete first;
+    } else {
+      ChainNode<T>* before = this->pfirst;
+      ChainNode<T>* current = before;
+
+      for (int i = 0; i < index; i++) {
+        before = current;
+        current = current->plink;
+      }
+
+      //- rewire the links
+      before->plink = current->plink;
+      delete current;
+    }
+
+    size--; //- decrease size
+    return size;
+  }
   //- Get
   ChainNode<T> get(int index)
   {
