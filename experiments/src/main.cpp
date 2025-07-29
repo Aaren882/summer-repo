@@ -16,6 +16,7 @@ int main() {
   chain1.Add("ww");
   chain1.Add("yyy");
   chain1.Add("aaa");
+  chain1.Insert(1,"ddd");
 
   cout << chain1.get(0).data << endl; //-Print the 0 data from chain1
   cout << chain1 << endl;             //-Print the size of chain1

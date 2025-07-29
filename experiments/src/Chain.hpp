@@ -64,6 +64,33 @@ public:
     size--; //- decrease size
     return size;
   }
+  int Insert(int index,const T data)
+  {
+    ChainNode<T>* first = this->pfirst;
+    
+    if (!first) throw "This Chain is empty.";
+    if (index > size - 1) throw "Index out of range.";
+
+    
+    if (index == 0) {
+      new ChainNode(data, first);
+    } else {
+      ChainNode<T>* before = this->pfirst;
+      ChainNode<T>* current = before;
+
+      for (int i = 0; i < index; i++) {
+        before = current;
+        current = current->plink;
+      }
+
+      //- rewire the links
+      ChainNode<T>* newNode = new ChainNode(data, current); //- Point to the pointer from the origin index
+      before->plink = newNode; //- point to newNode
+    }
+
+    size++; //- increase size
+    return size;
+  }
   //- Get
   ChainNode<T> get(int index)
   {
