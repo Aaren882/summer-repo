@@ -53,4 +53,17 @@ public:
 
     return *result; //- de-Ref
   }
+  //- Find the index of given data
+  int indexOf (T theElem) {
+    int index = 0;
+    ChainNode<T>* current = this->pfirst;
+    while (current && current->data != theElem) {
+      current = current->plink;
+      index++;
+    }
+
+    if (!current) return -1; //- check current exist
+
+    return index;
+  }
 };

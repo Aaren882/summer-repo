@@ -11,7 +11,11 @@ class ChainNode
 
   public:
     T data;
-    ChainNode(const T data, ChainNode<T> *plink = nullptr)
+    ChainNode(const T data)
+    {
+      this->data = data;
+    }
+    ChainNode(const T data, ChainNode<T> *plink)
     {
       this->data = data;
       this->plink = plink;
