@@ -88,7 +88,7 @@ class Polynominal
     };
     Polynominal Add(const Polynominal poly) {
       
-      Polynominal result = Polynominal(poly.terms + this->terms); //- de-Ref
+      Polynominal result = Polynominal(poly.terms + this->terms);
       Term *_resultArray = result.termArray;
 
       //- Copy current props into result
@@ -105,14 +105,40 @@ class Polynominal
 
       return result;
     }
-    // Polynominal Mult(Polynominal poly);
+
+    Polynominal Mult(Polynominal poly) {
+
+      Polynominal result = Polynominal();
+      // Term *_resultArray = result.termArray;
+
+      //- Copy current props into result
+      /* result.maxExp = this->maxExp;
+      result.terms = this->terms;
+      copy(this->termArray, this->termArray + this->terms, _resultArray); */
+
+      // (x^2 + 2) * (2x^2)
+      //- Add poly's terms into result.termArray
+      for (int i = 0; i < poly.terms; i++)
+      {
+        Term addterm = poly.termArray[i];
+        for (int j = 0; j < this->terms; j++)
+        {
+          Term term = this->termArray[j];
+          if (!term.coef || !addterm.coef)
+            break;
+          result.newTerm(term.coef * addterm.coef, term.exp + addterm.exp);
+        }
+      }
+
+      return result;
+    };
     
     int maxExponent() {
       return maxExp;
     }
     double Eval(float x)
     {
-      double result;
+      double result = 0;
 
       for (int i = 0; i < terms; i++)
       {
@@ -130,19 +156,19 @@ int main() {
   Polynominal a; //- Setup capacity
 
   // (Coef, Exp)
-  a.newTerm(1,2);
-  a.newTerm(2,0);
+  a.newTerm(2,1);
+  // a.newTerm(2,0);
 
   Polynominal b; //- Setup capacity
-  b.newTerm(2, 2); //- Return (coef: 3, Exp: 2)
+  b.newTerm(3, 1); //- Return (coef: 3, Exp: 2)
 
   //- Add two polynominals
-  Polynominal c = a.Add(b);
+  // Polynominal c = a.Add(b);
+  Polynominal c = a.Mult(b); //- (6x^2)
 
   float x;
   cout << "input X : ";
   cin >> x;
-  // x = 0 + x;
 
   cout << "Result A : " << a.Eval(x) << endl;
   cout << "Result B : " << b.Eval(x) << endl;
