@@ -53,10 +53,6 @@ class Polynominal
 
         //- Copy termArray
         copy(termArray, termArray + terms, newArray);
-        /* for (int i = 0; i < capacity; i++)
-        {
-          newArray[i] = termArray[i];
-        } */
         delete[] termArray;
         
         termArray = newArray;
@@ -111,12 +107,7 @@ class Polynominal
       Polynominal result = Polynominal();
       // Term *_resultArray = result.termArray;
 
-      //- Copy current props into result
-      /* result.maxExp = this->maxExp;
-      result.terms = this->terms;
-      copy(this->termArray, this->termArray + this->terms, _resultArray); */
-
-      // (x^2 + 2) * (2x^2)
+      // (x^2 + 2) * (2x^2) = x^4 + 2
       //- Add poly's terms into result.termArray
       for (int i = 0; i < poly.terms; i++)
       {
@@ -157,7 +148,7 @@ int main() {
 
   // (Coef, Exp)
   a.newTerm(2,1);
-  // a.newTerm(2,0);
+  a.newTerm(2,0);
 
   Polynominal b; //- Setup capacity
   b.newTerm(3, 1); //- Return (coef: 3, Exp: 2)
