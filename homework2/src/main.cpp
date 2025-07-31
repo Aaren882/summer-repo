@@ -15,8 +15,8 @@ class Polynominal
 {
   private:
     Term *termArray = {};
+    int terms = 0; //- how many "Term" in "termArray"
     int capacity;
-    int maxExp = 0; //- maximum of exponent number
     /* void sort() { //- Arrange Polynominal
       Term *newArray = new Term[capacity];
       for (int i = 0; i < terms; i++)
@@ -31,7 +31,6 @@ class Polynominal
     } */
 
   public:
-    int terms = 0; //- how many "Term" in "termArray"
     Polynominal(const int cap = 1)
     {
       if (cap < 1)
@@ -58,10 +57,6 @@ class Polynominal
         termArray = newArray;
       }
 
-      //- Check max exponent
-      if (exp > maxExponent())
-        maxExp = exp;
-
       for (int i = 0; i < capacity; i++)
       {
         Term *currnent = &termArray[i];
@@ -82,13 +77,13 @@ class Polynominal
 
       return true;
     };
+    
     Polynominal Add(const Polynominal poly) {
       
       Polynominal result = Polynominal(poly.terms + this->terms);
       Term *_resultArray = result.termArray;
 
       //- Copy current props into result
-      result.maxExp = this->maxExp;
       result.terms = this->terms;
       copy(this->termArray, this->termArray + this->terms, _resultArray);
       
@@ -105,7 +100,6 @@ class Polynominal
     Polynominal Mult(Polynominal poly) {
 
       Polynominal result = Polynominal();
-      // Term *_resultArray = result.termArray;
 
       // (x^2 + 2) * (2x^2) = x^4 + 2
       //- Add poly's terms into result.termArray
@@ -115,7 +109,7 @@ class Polynominal
         for (int j = 0; j < this->terms; j++)
         {
           Term term = this->termArray[j];
-          if (!term.coef || !addterm.coef)
+          if (!term.coef || !addterm.coef) //- if coef is 0, skip
             break;
           result.newTerm(term.coef * addterm.coef, term.exp + addterm.exp);
         }
@@ -123,10 +117,7 @@ class Polynominal
 
       return result;
     };
-    
-    int maxExponent() {
-      return maxExp;
-    }
+
     double Eval(float x)
     {
       double result = 0;
@@ -144,18 +135,18 @@ class Polynominal
 
 int main() {
 
-  Polynominal a; //- Setup capacity
+  Polynominal a; //- Setup A
 
   // (Coef, Exp)
   a.newTerm(2,1);
   a.newTerm(2,0);
 
-  Polynominal b; //- Setup capacity
+  Polynominal b; //- Setup B
   b.newTerm(3, 1); //- Return (coef: 3, Exp: 2)
 
   //- Add two polynominals
-  // Polynominal c = a.Add(b);
-  Polynominal c = a.Mult(b); //- (6x^2)
+  // Polynominal c = a.Add(b); //- (2x + 2) + (3x) = 5x + 2
+  Polynominal c = a.Mult(b); //- (2x + 2) * (3x) = 6x^2 + 6x
 
   float x;
   cout << "input X : ";
