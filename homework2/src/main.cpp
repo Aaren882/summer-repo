@@ -42,15 +42,6 @@ class Polynominal
       this->capacity = cap;
       termArray = new Term[capacity];
     };
-    /* Polynominal(const int &cap = 1, const float &x)
-    {
-      if (cap < 1)
-        throw "invaild capacity.";
-      
-      setValue(x); //- Set X value for this polynomial
-      this->capacity = cap;
-      termArray = new Term[capacity];
-    }; */
 
     bool newTerm(float coef, int exp)
     {
