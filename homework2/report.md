@@ -10,14 +10,14 @@
 
 1.  **使用 Class**：
     *   我弄了一個 `Term` 的 class，專門用來存每一項的係數 (`coef`) 和次方 (`exp`)。
-    *   然後再一個 `Polynominal` 的 class，裡面包一個 `termArray` 陣列，把所有的 `Term` 都丟進去。
+    *   然後再一個 `Polynomial` 的 class，裡面包一個 `termArray` 陣列，把所有的 `Term` 都丟進去。
 2.  **陣列不夠大時**：
-    *   `Polynominal` 一開始會先開一個陣列，但可能不夠用。
+    *   `Polynomial` 一開始會先開一個陣列，但可能不夠用。
     *   所以當我用 `newTerm` 加新的項進去，如果發現陣列滿了，我就會直接把陣列容量變兩倍大，然後把舊的東西全部複製過去。
 3.  **主要功能**：
     *   `newTerm(float coef, int exp)`：加一個新的項。如果那個次方的項已經有了，就把係數加起來；如果沒有，就新增一個。
-    *   `Add(Polynominal poly)`：多項式加法。把另一個多項式 `poly` 裡面的每一項，都用 `newTerm` 加到我自己的多項式裡。
-    *   `Mult(Polynominal poly)`：多項式乘法。這個比較暴力，我用了兩層 for 迴圈，把兩個多項式的每一項都互相乘起來，然後把結果用 `newTerm` 加到一個新的多項式裡。
+    *   `Add(Polynomial poly)`：多項式加法。把另一個多項式 `poly` 裡面的每一項，都用 `newTerm` 加到我自己的多項式裡。
+    *   `Mult(Polynomial poly)`：多項式乘法。這個比較暴力，我用了兩層 for 迴圈，把兩個多項式的每一項都互相乘起來，然後把結果用 `newTerm` 加到一個新的多項式裡。
     *   `Eval()`：算答案。就代入 x 啊，把每一項的 `coef * x^exp` 都算出來，然後全部加起來。
 4.  **讓 code 變好看**：
     *   我用了運算子重載 (Operator Overloading)，把 `+` 和 `*` 都重載了，這樣就可以直接用 `p1 + p2` 這種方式來算，看起來很直觀。
@@ -30,16 +30,16 @@
 #include "math.h"
 using namespace std;
 
-class Polynominal;
+class Polynomial;
 class Term
 {
-  friend Polynominal;
+  friend Polynomial;
   private:
     float coef = 0; //- Coefficient
     int exp = 0;    //- Exponent
 };
 
-class Polynominal
+class Polynomial
 {
   private:
     Term *termArray = {};
@@ -49,7 +49,7 @@ class Polynominal
     int capacity;
 
   public:
-    Polynominal(const int &cap = 1)
+    Polynomial(const int &cap = 1)
     {
       if (cap < 1)
         throw "invaild capacity.";
@@ -97,10 +97,10 @@ class Polynominal
       return true;
     };
 
-    Polynominal Add(const Polynominal poly)
+    Polynomial Add(const Polynomial poly)
     {
       
-      Polynominal result = Polynominal(poly.terms + this->terms);
+      Polynomial result = Polynomial(poly.terms + this->terms);
       Term *_resultArray = result.termArray;
 
       //- Copy current props into result
@@ -117,10 +117,10 @@ class Polynominal
       return result;
     }
 
-    Polynominal Mult(Polynominal poly)
+    Polynomial Mult(Polynomial poly)
     {
 
-      Polynominal result = Polynominal();
+      Polynomial result = Polynomial();
 
       // (x^2 + 2) * (2x^2) = x^4 + 2
       //- Add poly\'s terms into result.termArray
@@ -184,18 +184,18 @@ class Polynominal
     }
 
     //- overloads
-    Polynominal operator+(const Polynominal &b)
+    Polynomial operator+(const Polynomial &b)
     {
       return this->Add(b);
     }
-    Polynominal operator*(const Polynominal &b)
+    Polynomial operator*(const Polynomial &b)
     {
       return this->Mult(b);
     }
 };
 
 //- Overloads for input/output
-ostream &operator<<(ostream &os, Polynominal &poly)
+ostream &operator<<(ostream &os, Polynomial &poly)
 {
   float x;
 
@@ -210,7 +210,7 @@ ostream &operator<<(ostream &os, Polynominal &poly)
   return os;
 }
 
-istream &operator>>(istream &is, Polynominal &poly)
+istream &operator>>(istream &is, Polynomial &poly)
 {
   
   //- Ex. 2x^3 + 1 = "2 3 1 0"
@@ -238,7 +238,7 @@ istream &operator>>(istream &is, Polynominal &poly)
 }
 
 int main() {
-  Polynominal a; //- Setup A
+  Polynomial a; //- Setup A
   cin >> a;
   cout << "[" << a.getVisualizer() << "]" << endl;
 
@@ -305,7 +305,7 @@ $ ./hw2
 
 ## 申論及開發報告
 
-這次作業用了物件導向 (OOP) 的方法，把多項式包成一個 `Polynominal` class，我覺得有幾個好處：
+這次作業用了物件導向 (OOP) 的方法，把多項式包成一個 `Polynomial` class，我覺得有幾個好處：
 
 ### 物件導向程式設計 (OOP) 的應用
 
@@ -316,7 +316,7 @@ $ ./hw2
     `+` 和 `*` 寫起來就跟數學一樣，`>>` 和 `<<` 也很方便。
 
 3.  **可重用性**：
-    這個 `Polynominal` class 以後有其他作業要用到多項式，也能直接拿來用。
+    這個 `Polynomial` class 以後有其他作業要用到多項式，也能直接拿來用。
 
 ### 資料結構的選擇
 

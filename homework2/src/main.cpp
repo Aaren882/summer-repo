@@ -3,16 +3,16 @@
 #include "math.h"
 using namespace std;
 
-class Polynominal;
+class Polynomial;
 class Term
 {
-  friend Polynominal;
+  friend Polynomial;
   private:
     float coef = 0; //- Coefficient
     int exp = 0;    //- Exponent
 };
 
-class Polynominal
+class Polynomial
 {
   private:
     Term *termArray = {};
@@ -20,7 +20,7 @@ class Polynominal
     bool valueRegistered;
     float theValue;
     int capacity;
-    /* void sort() { //- Arrange Polynominal
+    /* void sort() { //- Arrange Polynomial
       Term *newArray = new Term[capacity];
       for (int i = 0; i < terms; i++)
       {
@@ -34,7 +34,7 @@ class Polynominal
     } */
 
   public:
-    Polynominal(const int &cap = 1)
+    Polynomial(const int &cap = 1)
     {
       if (cap < 1)
         throw "invaild capacity.";
@@ -82,10 +82,10 @@ class Polynominal
       return true;
     };
 
-    Polynominal Add(const Polynominal poly)
+    Polynomial Add(const Polynomial poly)
     {
       
-      Polynominal result = Polynominal(poly.terms + this->terms);
+      Polynomial result = Polynomial(poly.terms + this->terms);
       Term *_resultArray = result.termArray;
 
       //- Copy current props into result
@@ -102,10 +102,10 @@ class Polynominal
       return result;
     }
 
-    Polynominal Mult(Polynominal poly)
+    Polynomial Mult(Polynomial poly)
     {
 
-      Polynominal result = Polynominal();
+      Polynomial result = Polynomial();
 
       // (x^2 + 2) * (2x^2) = x^4 + 2
       //- Add poly's terms into result.termArray
@@ -169,18 +169,18 @@ class Polynominal
     }
 
     //- overloads
-    Polynominal operator+(const Polynominal &b)
+    Polynomial operator+(const Polynomial &b)
     {
       return this->Add(b);
     }
-    Polynominal operator*(const Polynominal &b)
+    Polynomial operator*(const Polynomial &b)
     {
       return this->Mult(b);
     }
 };
 
 //- Overloads for input/output
-ostream &operator<<(ostream &os, Polynominal &poly)
+ostream &operator<<(ostream &os, Polynomial &poly)
 {
   float x;
 
@@ -195,7 +195,7 @@ ostream &operator<<(ostream &os, Polynominal &poly)
   return os;
 }
 
-istream &operator>>(istream &is, Polynominal &poly)
+istream &operator>>(istream &is, Polynomial &poly)
 {
   
   //- Ex. 2x^3 + 1 = "2 3 1 0"
@@ -224,27 +224,27 @@ istream &operator>>(istream &is, Polynominal &poly)
 
 int main() {
 
-  /* Polynominal a; //- Setup A
+  /* Polynomial a; //- Setup A
 
   // (Coef, Exp)
   a.newTerm(2,1);
   a.newTerm(2,0);
 
-  Polynominal b; //- Setup B
+  Polynomial b; //- Setup B
   b.newTerm(4, 1); //- Return (coef: 3, Exp: 2)
   b.setValue(2);
   a.setValue(2);
 
   //- Add two polynominals
-  Polynominal c = a + b; //- (2x + 2) + (4x) = 6x + 2
-  Polynominal d = a * b; //- (2x + 2) * (4x) = 8x^2 + 8x
+  Polynomial c = a + b; //- (2x + 2) + (4x) = 6x + 2
+  Polynomial d = a * b; //- (2x + 2) * (4x) = 8x^2 + 8x
 
   cout << "Result A : " << a << endl;
   cout << "Result B : " << b << endl;
   cout << "Result A + B : " << c << endl;
   cout << "Result A * B : " << d << endl; */
 
-  Polynominal a; //- Setup A
+  Polynomial a; //- Setup A
   cin >> a;
   cout << "[" << a.getVisualizer() << "]" << endl;
 
