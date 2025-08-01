@@ -1,4 +1,5 @@
 ﻿#include "iostream"
+#include "sstream"
 #include "math.h"
 using namespace std;
 
@@ -16,6 +17,8 @@ class Polynominal
   private:
     Term *termArray = {};
     int terms = 0; //- how many "Term" in "termArray"
+    bool valueRegistered;
+    float theValue;
     int capacity;
     /* void sort() { //- Arrange Polynominal
       Term *newArray = new Term[capacity];
@@ -31,7 +34,7 @@ class Polynominal
     } */
 
   public:
-    Polynominal(const int cap = 1)
+    Polynominal(const int &cap = 1)
     {
       if (cap < 1)
         throw "invaild capacity.";
@@ -39,8 +42,18 @@ class Polynominal
       this->capacity = cap;
       termArray = new Term[capacity];
     };
+    /* Polynominal(const int &cap = 1, const float &x)
+    {
+      if (cap < 1)
+        throw "invaild capacity.";
+      
+      setValue(x); //- Set X value for this polynomial
+      this->capacity = cap;
+      termArray = new Term[capacity];
+    }; */
 
-    bool newTerm(float coef, int exp) {
+    bool newTerm(float coef, int exp)
+    {
       if (coef == 0)
         throw "coef is 0";
 
@@ -77,8 +90,9 @@ class Polynominal
 
       return true;
     };
-    
-    Polynominal Add(const Polynominal poly) {
+
+    Polynominal Add(const Polynominal poly)
+    {
       
       Polynominal result = Polynominal(poly.terms + this->terms);
       Term *_resultArray = result.termArray;
@@ -97,7 +111,8 @@ class Polynominal
       return result;
     }
 
-    Polynominal Mult(Polynominal poly) {
+    Polynominal Mult(Polynominal poly)
+    {
 
       Polynominal result = Polynominal();
 
@@ -118,7 +133,16 @@ class Polynominal
       return result;
     };
 
-    double Eval(float x)
+    void setValue(const float &x)
+    {
+      theValue = x;
+      valueRegistered = true;
+    }
+    bool hasValue()
+    {
+      return valueRegistered;
+    }
+    double Eval()
     {
       double result = 0;
 
@@ -126,35 +150,121 @@ class Polynominal
       {
         Term *term = &termArray[i]; //- pointer
         if (!term) break;
-        result += (double)term->coef * pow(x, term->exp);
+        result += (double)term->coef * pow(this->theValue, term->exp);
       }
 
       return result;
     };
+
+    string getVisualizer()
+    {
+      stringstream ss;
+      
+      for (int i = 0; i < terms; i++)
+      {
+        Term *term = &this->termArray[i];
+        if (!term) break;
+
+        if (i > 0 && term->coef >= 0)
+          ss << " + ";
+
+        ss << term->coef;
+
+        if (term->exp != 0)
+          ss << "x^" << term->exp;
+      }
+
+      return ss.str();
+    }
+
+    //- overloads
+    Polynominal operator+(const Polynominal &b)
+    {
+      return this->Add(b);
+    }
+    Polynominal operator*(const Polynominal &b)
+    {
+      return this->Mult(b);
+    }
 };
+
+//- Overloads for input/output
+ostream &operator<<(ostream &os, Polynominal &poly)
+{
+  float x;
+
+  if (!poly.hasValue())
+  {
+    cout << endl << "input X value : ";
+    cin >> x;
+    poly.setValue(x);
+  }
+
+  os << poly.Eval();
+  return os;
+}
+
+istream &operator>>(istream &is, Polynominal &poly)
+{
+  
+  //- Ex. 2x^3 + 1 = "2 3 1 0"
+  cout << "Enter the Polynomial :" << endl;
+  cout << "ex. " << "2x^3 + 1 = \"2 3 1 0\"" << endl << "::";
+
+  string input;
+  getline(is, input);
+
+  // ex. "2x^3 + 5x - 1"
+  // "2 3 5 1 -1 0" (must be pairs)
+  stringstream ss(input);
+
+  float coef = 1;
+  int exp = 0;
+  while (ss >> coef >> exp)
+  {
+    poly.newTerm(coef, exp);
+  }
+
+  ss.clear();
+  ss.str("");
+
+  return is;
+}
 
 int main() {
 
-  Polynominal a; //- Setup A
+  /* Polynominal a; //- Setup A
 
   // (Coef, Exp)
   a.newTerm(2,1);
   a.newTerm(2,0);
 
   Polynominal b; //- Setup B
-  b.newTerm(3, 1); //- Return (coef: 3, Exp: 2)
+  b.newTerm(4, 1); //- Return (coef: 3, Exp: 2)
+  b.setValue(2);
+  a.setValue(2);
 
   //- Add two polynominals
-  // Polynominal c = a.Add(b); //- (2x + 2) + (3x) = 5x + 2
-  Polynominal c = a.Mult(b); //- (2x + 2) * (3x) = 6x^2 + 6x
+  Polynominal c = a + b; //- (2x + 2) + (4x) = 6x + 2
+  Polynominal d = a * b; //- (2x + 2) * (4x) = 8x^2 + 8x
 
-  float x;
-  cout << "input X : ";
+  cout << "Result A : " << a << endl;
+  cout << "Result B : " << b << endl;
+  cout << "Result A + B : " << c << endl;
+  cout << "Result A * B : " << d << endl; */
+
+  Polynominal a; //- Setup A
+  cin >> a;
+  cout << "[" << a.getVisualizer() << "]" << endl;
+
+  float x; //- X value for evaluation
+  cout << endl << "Enter X value : ";
   cin >> x;
+  a.setValue(x);
 
-  cout << "Result A : " << a.Eval(x) << endl;
-  cout << "Result B : " << b.Eval(x) << endl;
-  cout << "Result C : " << c.Eval(x) << endl;
+  cout << endl << "Evaluation : " << endl;
+  cout << ": " << "x = " << x << endl;
+  cout << ": " << a.getVisualizer() << " = " << a << endl << endl;
 
   printf("Press Enter to exit...\n");
   cin.ignore().get();
