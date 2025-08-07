@@ -21,7 +21,7 @@ public:
     ChainNode<T> *pNewNode = new ChainNode<T>(input);
 
     //-#NOTE - Pointer is C++ nature, must get use to it
-
+    //- #TODO - Circular Link List implementation
     if (size == 0) //- #NOTE - Check empty
     {
       this->pfirst = pNewNode; //- the first Node
@@ -64,7 +64,7 @@ public:
     size--; //- decrease size
     return size;
   }
-  int Insert(int index,const T data)
+  int Insert(int index,const T& data)
   {
     ChainNode<T>* first = this->pfirst;
     
@@ -73,7 +73,8 @@ public:
 
     
     if (index == 0) {
-      new ChainNode(data, first);
+      ChainNode<T>* newNode = new ChainNode(data, first);
+      this->pfirst = newNode;
     } else {
       ChainNode<T>* before = this->pfirst;
       ChainNode<T>* current = before;
