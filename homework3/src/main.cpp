@@ -75,7 +75,7 @@ int main()
   b.newTerm(2, 0);
 
   // Polynomial c = a.Add(b);
-  Polynomial c = a.Sub(b);
+  Polynomial c = a.Minus(b);
   // Polynomial c = a.Mult(b);
 
   cout

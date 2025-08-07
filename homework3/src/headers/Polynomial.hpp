@@ -130,7 +130,7 @@ public:
 
     return *result; 
   }
-  Polynomial Sub(const Polynomial& poly)
+  Polynomial Minus(const Polynomial& poly)
   {
     //- Clone the given Polynomial 
     Polynomial* result = new Polynomial(*this);
@@ -222,7 +222,7 @@ public:
   }
   Polynomial operator-(const Polynomial &b)
   {
-    return this->Sub(b);
+    return this->Minus(b);
   }
   Polynomial operator*(const Polynomial &b)
   {
