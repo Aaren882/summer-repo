@@ -81,21 +81,36 @@ public:
     
     //- New a term object
     Term* newTerm = new Term(coef,exp);
-    for (int i = 0; i < terms; i++)
-    {
-      Term& term = GetTerm(i);
-
-      //- if they're able to be add up
-      if (term.Add(*newTerm)) //- #NOTE - "term->coef" will be modified
+    
+    if (terms > 0) {
+      for (int i = 0; i < terms; i++)
       {
-        if (term.coef == 0) //- if coef == 0 then Delete that node
+        Term& term = GetTerm(i);
+
+        //- if they're able to be add up
+        if (term.Add(*newTerm)) //- #NOTE - "term->coef" will be modified
         {
-          termArray->Delete(i);
-          terms--;
+          if (term.coef == 0) //- if coef == 0 then Delete that node
+          {
+            termArray->Delete(i);
+            terms--;
+          }
+          return true; //- Just exit and return
         }
-        return true; //- Just exit and return
+      }
+
+      //- Arrange List by exponent descending
+      for (int i = 0; i < terms; i++) {
+        Term& term = GetTerm(i);
+        if (newTerm->exp > term.exp) { //- if "newTerm->exp" greater than "term.exp"
+          termArray->Insert(i, *newTerm);
+          terms++;
+          return true;
+        }
       }
     }
+    
+    //- when termArray empty
     termArray->Add(*newTerm);
     terms++;
  
