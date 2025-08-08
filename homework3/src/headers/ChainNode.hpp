@@ -5,12 +5,15 @@ template <class T>
 class ChainNode
 {
   friend class Chain<T>;
+  friend class Available;
+  friend class Polynomial;
 
   private:
+    T data;
     ChainNode<T> *plink = nullptr; //- Pointer of next node
 
   public:
-    T data;
+    ChainNode(){}
     ChainNode(const T& dta)
     {
       this->data = dta;
@@ -19,5 +22,8 @@ class ChainNode
     {
       this->data = dta;
       this->plink = link;
+    }
+    T& getData() {
+      return this->data;
     }
 };

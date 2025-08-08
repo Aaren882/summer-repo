@@ -4,43 +4,7 @@
 
 template <class T>
 class Chain;
-class Term
-{
-  friend class Polynomial;
-
-private:
-  float coef = 0; //- Coefficient
-  int exp = 0;    //- Exponent
-  
-  //- #NOTE - if exponents are equal, it will modify "this->coef"
-  bool Add(const Term& addterm)
-  {
-    //- Check exponent equallty
-    if (this->exp == addterm.exp)
-    {
-      this->coef += addterm.coef;
-      return true;
-    }
-    return false;
-  }
-  
-public:
-  Term() {};
-  Term(float c, int e)
-  {
-    this->coef = c;
-    this->exp = e;
-  };
-
-  //- overloads
-  operator==(Term &other) {
-    return this->coef == other.coef &&
-      this->exp == other.exp;
-  }
-  operator+(const Term& other) {
-    return Add(other);
-  }
-};
+Available globalASL;
 
 class Polynomial
 {
@@ -50,8 +14,6 @@ class Polynomial
 private:
   Chain<Term> *termArray = nullptr;
   int terms = 0; //- how many "Term" in "termArray"
-  bool valueRegistered = false;
-  float theValue = 0;
   int capacity = 0;
 
 public:
@@ -61,13 +23,24 @@ public:
       throw "invaild capacity.";
 
     this->capacity = cap;
-    this->termArray = new Chain<Term>(5);
+    this->termArray = new Chain<Term>;
   }
   Polynomial(const Polynomial& Poly) //- Clone contructor
   {
     this->terms = Poly.terms;
     this->capacity = Poly.capacity;
     this->termArray = Poly.termArray;
+  }
+  ~Polynomial() //- destructor
+  {
+    ChainNode<Term> *header = termArray->pfirst;
+    ChainNode<Term> *last = termArray->plast;
+
+    last->plink = nullptr;
+    globalASL.getBack(header);
+    header = last = nullptr;
+    delete header;
+    delete last;
   }
 
   bool newTerm(float coef, int exp)
@@ -122,10 +95,9 @@ public:
     int index = termArray->indexOf(element);
     termArray->Delete(index);
   }
-  Term& GetTerm(int index) //- #NOTE - This returns ref-value (dangerous? 🤔 IDK)
+  Term& GetTerm(int index)const //- #NOTE - This returns ref-value (dangerous? 🤔 IDK)
   {
-    ChainNode<Term>* returnNode = this->termArray->get(index);
-    return returnNode->data;
+    return this->termArray->get(index)->getData();
   }
   
   //- Operators
@@ -138,7 +110,7 @@ public:
     for (int i = 0; i < poly.terms; i++)
     {
       ChainNode<Term>* addNode = poly.termArray->get(i);
-      Term term = addNode->data;
+      Term term = addNode->getData();
 
       result->newTerm(term.coef,term.exp);
     }
@@ -154,7 +126,7 @@ public:
     for (int i = 0; i < poly.terms; i++)
     {
       ChainNode<Term>* addNode = poly.termArray->get(i);
-      Term term = addNode->data;
+      Term term = addNode->getData();
 
       result->newTerm(-term.coef,term.exp); //- Same as Add() but with "-term.coef"
     }
@@ -171,7 +143,7 @@ public:
     for (int i = 0; i < poly.terms; i++)
     {
       ChainNode<Term>* addNode = poly.termArray->get(i);
-      Term addterm = addNode->data;
+      Term addterm = addNode->getData();
       
       for (int j = 0; j < this->terms; j++)
       {
@@ -186,16 +158,7 @@ public:
   };
 
   //- Evaluation
-  void setValue(const float &x)
-  {
-    theValue = x;
-    valueRegistered = true;
-  }
-  bool hasValue()
-  {
-    return valueRegistered;
-  }
-  double Eval()
+  double Eval(const float &x)
   {
     double result = 0;
 
@@ -204,7 +167,7 @@ public:
       Term *term = &GetTerm(i); //- pointer
       if (!term)
         break;
-      result += (double)term->coef * pow(this->theValue, term->exp);
+      result += (double)term->coef * pow(x, term->exp);
     }
 
     return result;

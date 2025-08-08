@@ -1,38 +1,32 @@
 ﻿template <class T>
 class Chain
 {
+  friend class Available;
+  friend class Polynomial;
+
 private:
   int capacity;
-  ChainNode<T> *pfirst;
-  ChainNode<T> *plast;
+  ChainNode<T> *pfirst = nullptr;
+  ChainNode<T> *plast = nullptr;
 
 public:
   int size = 0;
 
-  Chain(const int& cap = 1)
-  {
-    this->capacity = cap;
-  }
+  Chain(){}
   //- Add NewNode
   int Add(const T input)
   {
     
     //- de-ref the "newNode"
     ChainNode<T> *pNewNode = new ChainNode<T>(input);
-
-    //-#NOTE - Pointer is C++ nature, must get use to it
-    //- #TODO - Circular Link List implementation
-    if (size == 0) //- #NOTE - Check empty
-    {
-      this->pfirst = pNewNode; //- the first Node
-      pfirst->plink = pNewNode; //- Push back
-    }
+    if (!pfirst) //- #NOTE - Check empty
+      this->pfirst = pNewNode; //- Set First node
     else
-    {
-      plast->plink = pNewNode; //- Push back
-    }
-
-    this->plast = pNewNode;
+      this->plast->plink = pNewNode; //- point "last->link" to pNewNode
+    
+    //- the rest of them
+    this->plast = pNewNode;       //- Make pNewNode the last
+    this->plast->plink = pfirst;  //- point last to first
 
     size++; //- increase size
     return size;
